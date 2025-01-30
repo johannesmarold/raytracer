@@ -1,5 +1,5 @@
 ## Different Raytracing Models
-As part of a Computer Graphics course at TU Berlin.
+A Raytracing model with different stages of additional aspects such as shadowing and mirroring.
 
 ## Requirements
 
