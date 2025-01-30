@@ -1,5 +1,5 @@
 ## Different Raytracing Models
-A Raytracing model with different stages of additional aspects such as shadowing and mirroring.
+A Raytracing model with different stages of additional aspects such as shadowing and mirroring using WebGL.
 
 ## Requirements
 
