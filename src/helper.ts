@@ -234,10 +234,9 @@ function singleRaytrace(scene: THREE.Scene, settings: Settings, ray: THREE.Rayca
   if (intersects.length == 0){
     color = new THREE.Color(0,0,0);
     return color;
-    //canvas.setPixel(x, y, new THREE.Color(0,0,0));
   }
   else {
-    if (settings.phong){ //&& (intersects[0].object as THREE.Mesh).geometry instanceof THREE.SphereGeometry){
+    if (settings.phong){
       color = calcPhong(ray, intersects[0], scene, settings);
       // check for mirror
       if (settings.mirrors && ((intersects[0].object as THREE.Mesh).material as THREE.MeshPhongMaterial & {mirror: boolean}).mirror){
@@ -342,14 +341,11 @@ function calcPhong(ray: THREE.Raycaster, intersect: THREE.Intersection, scene: T
       // check for shadows
       if (!(settings.shadows && calcShadows(intersect, scene, child.clone(), settings))){
         
-      
       // light parameters
         let diffuseReflectance = ((intersect.object.clone() as THREE.Mesh).material as THREE.MeshPhongMaterial).color.clone();
         let specReflectance = ((intersect.object.clone() as THREE.Mesh).material as THREE.MeshPhongMaterial).specular.clone();
         let shininess = ((intersect.object.clone() as THREE.Mesh).material as THREE.MeshPhongMaterial).shininess;
         let lightIntensity = child.clone().color.multiplyScalar(child.intensity).multiplyScalar(4);
-        //let intersectPoint = intersect.point.clone().applyMatrix4(intersect.object.matrixWorld);
-        //let lightVector = intersectPoint.sub(lights[0].position);
         let lightVector = child.position.clone().sub(intersect.point);
         let attenuation = 1 / lightVector.lengthSq();
         lightVector = lightVector.normalize();
@@ -387,10 +383,8 @@ function calcShadows(point: THREE.Intersection, scene: THREE.Scene, light: THREE
   ray.ray.origin.add(ray.ray.direction.clone().multiplyScalar(10 ** -8));
   let intersects = calcIntersects(scene, ray, settings);
   if (intersects.length > 0){
-    //return new THREE.Color("rgb(255, 255, 255)");
     return true;
   }
-  //return new THREE.Color("rgb(0, 0, 0)");
   return false;
 }
 
@@ -406,53 +400,8 @@ function retrieveNormal(intersect: THREE.Intersection){
   }
   else {
     normal = (intersect.face as THREE.Face).normal;
-    // mat3(inverse(transpose(modelMatrix))) * vNormal;
     let matrixWorld = intersect.object.matrixWorld.clone();
     normal = normal.clone().applyMatrix3(new THREE.Matrix3().getNormalMatrix(matrixWorld)).normalize();
   }
   return normal;
 }
-
-/*
-function calcSphereGeometry2(mesh: THREE.Mesh, ray: THREE.Raycaster){
-  let geometry = mesh.geometry as THREE.SphereGeometry;
-  let c = mesh.position.clone();
-  let r = geometry.parameters.radius;
-  let o = ray.camera.position.clone();
-  let d = ray.ray.direction.clone().normalize();
-
-  let L = c.sub(o);
-  let tca = L.dot(d); //t_c
-  // if (tca < 0) return false;
-  let d2 = L.lengthSq() - tca ** 2;
-  if (d2 > r ** 2) return;
-  let thc = Math.sqrt(r**2 - d2);
-  let t0 = tca - thc;
-  let t1 = tca + thc;
-
-  if (t0 > t1) {
-      let temp = t0;
-      t0 = t1;
-      t1 = temp;
-  }
-
-  if (t0 < 0) {
-      t0 = t1; // if t0 is negative, let's use t1 instead
-      if (t0 < 0) return; // both t0 and t1 are negative
-  }
-
-  let t = t0;
-
-  let t_point = (d.clone().multiplyScalar(t)).add(o);
-
-  let inters = {
-  distance : t_point.clone().sub(o).length(),
-  point : t_point.clone(),
-  object : mesh,
-  t_0: t,
-  //normal: c.sub(t_point).normalize(),
-  normal: t_point.clone().sub(c).normalize(),
-  }
-  return inters;
-}
-*/
